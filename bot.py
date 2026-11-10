@@ -12,7 +12,7 @@ TELEGRAM_CHAT_ID = "1727960394"
 
 session = HTTP(
     testnet=True, # Тестовый режим Bybit
-    api_key=API_KEY
+    api_key="z058TlYRtO47UZug4p"
     api_secret=API_SECRETjFikrFFCf4rRJqeFw5tsNxczNuBZOxO126dP
 )
 
