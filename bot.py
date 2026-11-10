@@ -12,8 +12,8 @@ TELEGRAM_CHAT_ID = "1727960394"
 
 session = HTTP(
     testnet=True, # Тестовый режим Bybit
-    api\_key="z058TlYRtO47UZug4p"
-    api\_secret="jFikrFFCf4rRJqeFw5tsNxczNuBZOxO126dP"
+    api_key="z058TlYRtO47UZug4p"
+    api_secret="jFikrFFCf4rRJqeFw5tsNxczNuBZOxO126dP"
 )
 
 def send_telegram(message):
