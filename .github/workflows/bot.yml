@@ -1,19 +1,16 @@
 name: Run Bybit Bot
 
 on:
-  schedule:
-    - cron: '0 * * * *'
   workflow_dispatch:
+  schedule:
+    - cron: '0 */6 * * *'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
@@ -21,7 +18,36 @@ jobs:
         run: |
           pip install pybit requests
 
-      - name: Run bot script
+      - name: Run script directly
+        env:
+          API_KEY: "z058TlYRtO47UZug4p"
+          API_SECRET: "jFikrFFCf4rRJqeFw5tsNxczNuBZOxO126dP"
+          TELEGRAM_TOKEN: "9087652673:AAepGVKh8ETefnT8n8oIhqQzT"
+          TELEGRAM_CHAT_ID: "1727960394"
         run: |
-          python bot.py
+          python -c '
+          import os
+          import requests
+          from pybit.unified_trading import HTTP
+
+          session = HTTP(
+              testnet=True,
+              api_key=os.environ["API_KEY"],
+              api_secret=os.environ["API_SECRET"]
+          )
+
+          try:
+              response = session.get_tickers(category="linear")
+              tickers = response.get("result", {}).get("list", [])
+              usdt_pairs = [t for t in tickers if t["symbol"].endswith("USDT")]
+              usdt_pairs.sort(key=lambda x: float(x["turnover24h"]), reverse=True)
+              top_3 = [item["symbol"] for item in usdt_pairs[:3]]
+              
+              message = "🔥 Аналіз ринку Bybit (USDT):\n" + "\n".join(f"- {s}" for s in top_3)
+              url = f"https://api.telegram.org/bot{os.environ[\"TELEGRAM_TOKEN\"]}/sendMessage"
+              requests.post(url, json={"chat_id": os.environ["TELEGRAM_CHAT_ID"], "text": message}, timeout=5)
+              print("Успешно отправлено!")
+          except Exception as e:
+              print(f"Ошибка: {e}")
+          '
 
